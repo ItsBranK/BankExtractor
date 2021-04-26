@@ -8,7 +8,7 @@ Use [ww2ogg](https://github.com/hcs64/ww2ogg) to convert `WEM` files to the `OGG
 ## Usage
 
 ```
-Usage: bnkextr.exe filename.bnk [/swap] [/nodir] [/index] [/info]
+Usage: bankextractor.exe filename.bnk [/swap] [/nodir] [/index] [/info]
 	/swap - Swap byte order (use it for unpacking "Army of Two").
 	/nodir - Create no additional directory for the *.wem files.
 	/index - Writes the internal bnk id for the extracted *.wem file names.
