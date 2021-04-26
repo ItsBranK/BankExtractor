@@ -1,6 +1,6 @@
 # Wwise *.BNK File Extractor
 
-This is a C++ rewrite and extension of **bnkextr** originally written by CTPAX-X in Delphi.
+This is a modern C++ rewrite and extension of **bnkextr** originally written by CTPAX-X in Delphi.
 It extracts `WEM` files from the ever more popular Wwise `BNK` format.
 
 Use [ww2ogg](https://github.com/hcs64/ww2ogg) to convert `WEM` files to the `OGG` format.
@@ -8,33 +8,14 @@ Use [ww2ogg](https://github.com/hcs64/ww2ogg) to convert `WEM` files to the `OGG
 ## Usage
 
 ```
-Usage: bnkextr filename.bnk [/swap] [/nodir]
-        /swap - swap byte order (use it for unpacking 'Army of Two')
-        /nodir - create no additional directory for the *.wem files
+Usage: bnkextr.exe filename.bnk [/swap] [/nodir] [/index] [/info]
+	/swap - Swap byte order (use it for unpacking "Army of Two").
+	/nodir - Create no additional directory for the *.wem files.
+	/index - Writes the internal bnk id for the extracted *.wem file names.
+	/info - Prints extra/detailed info to the console while extracting files.
 ```
 
-## BNK Format
+## Screenshots
 
-- See the [original Delphi code](bnkextr.dpr) for the initial file specification
-- See the [XeNTaX wiki](https://wiki.xentax.com/index.php/Wwise_SoundBank_(*.bnk)) for a more complete file specification
-- See the [bnk.ksy](bnk.ksy) file for [Kaitai Struct](https://kaitai.io/) specification
-
-## Build
-
-### CMake
-
-```
-cmake .
-cmake --build .
-```
-
-### GCC
-
-```
-g++ bnkextr.cpp -std=c++17 -static -O2 -s -o bnkextr.exe
-```
-
-## License
-
-- `bnkextr.dpr` falls under the original copryright holders rights and is solely kept for archival purpose
-- `bnkextr.cpp` is available under 2 licenses: Public Domain or MIT -- choose whichever you prefer
+![](https://i.imgur.com/YO3Rh3j.png)
+![](https://i.imgur.com/1t8CvQ6.png/)
