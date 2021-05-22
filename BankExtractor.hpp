@@ -11,7 +11,7 @@
 
 /*
 	Original repository: https://github.com/eXpl0it3r/BankExtractor/
-	Current fork: https://github.com/CodeRedRL/BankExtractor/
+	Current fork: https://github.com/ItsBranK/BankExtractor/
 
 	Thanks to XenTax for the information on sound bank files.
 	http://wiki.xentax.com/index.php/Wwise_SoundBank_(*.bnk)
