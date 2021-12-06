@@ -1,4 +1,4 @@
-# Wwise *.BNK File Extractor
+# Wwise *.BNK File Extractor (v2.2)
 
 This is a modern C++ rewrite and extension of **bnkextr** originally written by CTPAX-X in Delphi.
 It extracts `WEM` files from the ever more popular Wwise `BNK` format.

@@ -8,55 +8,32 @@ namespace Settings
     bool Info = false;
 }
 
-Section::Section()
-{
-    Length = 0;
-}
+Section::Section() : Length(0) {}
 
-Section::~Section() { }
+Section::~Section() {}
 
-ObjectSection::ObjectSection()
-{
-    Count = 0;
-}
+ObjectSection::ObjectSection() : Count(0) {}
 
-ObjectSection::~ObjectSection() { }
+ObjectSection::~ObjectSection() {}
 
-BKHD::BKHD()
-{
-    Version = 0;
-    Id = 0;
-}
+BKHD::BKHD() : Version(0), Id(0) {}
 
-BKHD::~BKHD() { }
+BKHD::~BKHD() {}
 
-DIDX::DIDX()
-{
-    Id = 0;
-    Offset = 0;
-    Length = 0;
-}
+DIDX::DIDX() : Id(0), Offset(0), Length(0) {}
 
-DIDX::~DIDX() { }
+DIDX::~DIDX() {}
 
-HIRC::HIRC()
-{
-    Type = WwiseObjects::Unknown;
-    Length = 0;
-    Id = 0;
-}
+HIRC::HIRC() : Type(WwiseObjects::Unknown), Length(0), Id(0) {}
 
-HIRC::~HIRC() { }
+HIRC::~HIRC() {}
 
 std::string HIRC::GetObjectName() const
 {
-    std::string returnName = "Unknown";
+    std::string returnName;
 
     switch (static_cast<WwiseObjects>(Type))
     {
-    case WwiseObjects::Unknown:
-        returnName = "Unknown";
-        break;
     case WwiseObjects::Settings:
         returnName = "Settings";
         break;
@@ -114,37 +91,28 @@ std::string HIRC::GetObjectName() const
     case WwiseObjects::AuxiliaryBus:
         returnName = "Auxiliary Bus";
         break;
+    default:
+        returnName = "Unknown";
+        break;
     };
 
     return returnName;
 }
 
-STID::STID()
+STID::STID() : SoundId(0), NameLength(0) {}
+
+STID::~STID() {}
+
+STID_2::STID_2() { memset(Name, 0, sizeof(Name));}
+
+STID_2::~STID_2() {}
+
+SoundBank::SoundBank(const std::filesystem::path& filePath) : FilePath(std::filesystem::absolute(filePath)), FileName(filePath.filename().replace_extension("").u8string()), DataOffset(0)
 {
-    SoundId = 0;
-    NameLength = 0;
-}
-
-STID::~STID() { }
-
-STID_2::STID_2() { }
-
-STID_2::~STID_2() { }
-
-SoundBank::SoundBank(std::filesystem::path soundBankFile)
-{
-    FilePath = std::filesystem::absolute(soundBankFile);
-    FileName = FilePath.filename().replace_extension("").u8string();
-    BankFile.open(FilePath, std::ios::binary | std::ios::in);
-    DataOffset = 0;
-}
-
-SoundBank::SoundBank(const std::string& soundBankFile)
-{
-    FilePath = std::filesystem::absolute(soundBankFile);
-    FileName = FilePath.filename().replace_extension("").u8string();
-    BankFile.open(FilePath, std::ios::binary | std::ios::in);
-    DataOffset = 0;
+    if (std::filesystem::exists(FilePath))
+    {
+        BankFile.open(FilePath, std::ios::binary | std::ios::in);
+    }
 }
 
 SoundBank::~SoundBank()
@@ -152,14 +120,14 @@ SoundBank::~SoundBank()
     BankFile.close();
 }
 
-int32_t SoundBank::FileCount() const
+size_t SoundBank::FileCount() const
 {
-    return static_cast<int32_t>(WemData.size());
+    return WemData.size();
 }
 
-int32_t SoundBank::ObjectCount() const
+size_t SoundBank::ObjectCount() const
 {
-    return static_cast<int32_t>(WwiseObjects.size());
+    return WwiseObjects.size();
 }
 
 void SoundBank::PhraseSections()
@@ -176,14 +144,14 @@ void SoundBank::PhraseSections()
 
         while (BankFile.read(reinterpret_cast<char*>(&currentSection), sizeof(currentSection)))
         {
-            std::size_t sectionPos = BankFile.tellg();
+            size_t sectionPos = BankFile.tellg();
 
             if (Settings::Swap)
             {
                 currentSection.Length = _byteswap_ulong(currentSection.Length);
             }
 
-            if (std::strncmp(currentSection.Id, "BKHD", 4) == 0)
+            if (strncmp(currentSection.Id, "BKHD", 4) == 0)
             {
                 if (Settings::Info)
                 {
@@ -199,7 +167,7 @@ void SoundBank::PhraseSections()
                     std::cout << "Header Id: " << BankHeader.Id << std::endl << std::endl;
                 }
             }
-            else if (std::strncmp(currentSection.Id, "DIDX", 4) == 0)
+            else if (strncmp(currentSection.Id, "DIDX", 4) == 0)
             {
                 if (Settings::Info)
                 {
@@ -219,7 +187,7 @@ void SoundBank::PhraseSections()
                     }
                 }
             }
-            else if (std::strncmp(currentSection.Id, "DATA", 4) == 0)
+            else if (strncmp(currentSection.Id, "DATA", 4) == 0)
             {
                 if (Settings::Info)
                 {
@@ -233,10 +201,8 @@ void SoundBank::PhraseSections()
                     std::cout << "Data Offset: " << DataOffset << std::endl << std::endl;
                 }
             }
-            else if (std::strncmp(currentSection.Id, "HIRC", 4) == 0)
+            else if (strncmp(currentSection.Id, "HIRC", 4) == 0) // UNFINISHED!
             {
-                // UNFINISHED!
-
                 //BankFile.seekg(sectionPos - sizeof(currentSection));
                 //BankFile.read(reinterpret_cast<char*>(&objectSection), sizeof(objectSection));
 
@@ -249,10 +215,8 @@ void SoundBank::PhraseSections()
                 //    WwiseObjects.emplace_back(currentObject);
                 //}
             }
-            else if (std::strncmp(currentSection.Id, "STID", 4) == 0)
+            else if (strncmp(currentSection.Id, "STID", 4) == 0) // UNFINISHED!
             {
-                // UNFINISHED!
-
                 //BankFile.seekg(sectionPos - sizeof(currentSection));
                 //BankFile.read(reinterpret_cast<char*>(&soundSection), sizeof(soundSection));
             }
@@ -277,7 +241,7 @@ void SoundBank::ExtractFiles()
     {
         std::cout << "Extracting files..." << std::endl;
 
-        int32_t fileCount = 1;
+        size_t fileCount = 1;
 
         for (DIDX& data : WemData)
         {
@@ -301,7 +265,6 @@ void SoundBank::ExtractFiles()
             {
                 std::stringstream ss;
                 ss << FileName << "_" << std::setfill('0') << std::setw(4) << std::right << fileCount;
-
                 wemfilename = wemfilename.append(ss.str()).replace_extension(".wem");
             }
 
@@ -316,7 +279,6 @@ void SoundBank::ExtractFiles()
             if (wemFile.is_open())
             {
                 std::vector<char> wemData(data.Length);
-
                 BankFile.seekg(DataOffset + data.Offset);
                 BankFile.read(static_cast<char*>(wemData.data()), data.Length);
                 wemFile.write(static_cast<char*>(wemData.data()), data.Length);
@@ -370,7 +332,7 @@ bool ArugmentExists(const std::string& argumentToFind, const char* arguments[])
 
 int32_t main(int32_t argumentCount, const char* arguments[])
 {
-    std::cout << "Wwise *.BNK File Extractor (CodeRed Fork)" << std::endl << std::endl;
+    std::cout << "Wwise *.BNK File Extractor (ItsBranK Fork)" << std::endl << std::endl;
 
     if (argumentCount < 2)
     {

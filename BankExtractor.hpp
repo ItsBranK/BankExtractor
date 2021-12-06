@@ -11,7 +11,7 @@
 
 /*
 	Original repository: https://github.com/eXpl0it3r/BankExtractor/
-	Current fork: https://github.com/ItsBranK/BankExtractor/
+	Current fork: https://github.com/ItsBranK/BankExtractor
 
 	Thanks to XenTax for the information on sound bank files.
 	http://wiki.xentax.com/index.php/Wwise_SoundBank_(*.bnk)
@@ -160,13 +160,12 @@ private:
 private:
 
 public:
-	SoundBank(std::filesystem::path soundBankFile);
-	SoundBank(const std::string& soundBankFile);
+	SoundBank(const std::filesystem::path& filePath);
 	~SoundBank();
 
 public:
-	int32_t FileCount() const;
-	int32_t ObjectCount() const;
+	size_t FileCount() const;
+	size_t ObjectCount() const;
 	void PhraseSections();
 	void ExtractFiles();
 	void PrintHeader();
