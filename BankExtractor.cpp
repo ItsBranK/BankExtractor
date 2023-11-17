@@ -365,14 +365,6 @@ void SoundBank::ExtractFiles()
             }
 
             _bankFile.close();
-
-            std::ofstream scriptFile(_filePath / "Script.bat");
-            scriptFile << "for %%f in (*.wem) do \"../ww2ogg/ww2ogg.exe\" %%f --pcb \"../ww2ogg/packed_codebooks_aoTuV_603.bin\"" << std::endl;
-            scriptFile << "pause" << std::endl;
-            scriptFile << "for %%f in (*.ogg) do \"../revorb.exe\" %%f" << std::endl;
-            scriptFile << "pause" << std::endl;
-            scriptFile << "del *.wem" << std::endl;
-            scriptFile.close();
         }
         else
         {
