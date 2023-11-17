@@ -10,7 +10,7 @@
 #include <sstream>
 
 /*
-	Original repository: https://github.com/eXpl0it3r/BankExtractor/
+	Original repository: https://github.com/eXpl0it3r/bnkextr
 	Current fork: https://github.com/ItsBranK/BankExtractor
 
 	Thanks to XenTax for the information on sound bank files.
@@ -27,61 +27,91 @@ namespace Settings
 
 enum class WwiseObjects : uint8_t
 {
-	Unknown = 0x0,
-	Settings = 0x1,
-	SoundEffects = 0x2,
-	EventAction = 0x3,
-	Event = 0x4,
-	SequenceContainer = 0x5,
-	SwitchContainer = 0x6,
-	ActorMixer = 0x7,
-	AudioBus = 0x8,
-	BlendContainer = 0x9,
-	MusicSegment = 0xA,
-	MusicTrack = 0xB,
-	MusicSwitchContainer = 0xC,
-	MusicPlaylistContainer = 0xD,
-	Attenuation = 0xE,
-	DialogueEvent = 0xF,
-	MotionBus = 0x10,
-	MotionFx = 0x11,
-	Effect = 0x12,
-	AuxiliaryBus = 0x13
+	None = 0,
+	Settings = 1,
+	SoundEffects = 2,
+	EventAction = 3,
+	Event = 4,
+	SequenceContainer = 5,
+	SwitchContainer = 6,
+	ActorMixer = 7,
+	AudioBus = 8,
+	BlendContainer = 9,
+	MusicSegment = 10,
+	MusicTrack = 11,
+	MusicSwitchContainer = 12,
+	MusicPlaylistContainer = 13,
+	Attenuation = 14,
+	DialogueEvent = 15,
+	MotionBus = 16,
+	MotionFx = 17,
+	Effect = 18,
+	Unknown = 19,
+	AuxiliaryBus = 20
 };
 
+enum class EventActionScope : uint8_t
+{
+	Unknown = 0,
+	SwitchOrTrigger = 1,
+	Global = 2,
+	GameObject = 3,
+	State = 4,
+	All = 5,
+	AllExcept = 6
+};
+
+enum class EventActionType : uint8_t
+{
+	Unknown = 0,
+	Stop = 1,
+	Pause = 2,
+	Resume = 3,
+	Play = 4,
+	Trigger = 5,
+	Mute = 6,
+	UnMute = 7,
+	SetVoicePitch = 8,
+	ResetVoicePitch = 9,
+	SetVoiceVolume = 10,
+	ResetVoiceVolume = 11,
+	SetBusVolume = 12,
+	ResetBusVolume = 13,
+	SetVoiceLowPassFilter = 14,
+	ResetVoiceLowPassFilter = 15,
+	EnableState = 16,
+	DisableState = 17,
+	SetState = 18,
+	SetGameParameter = 19,
+	ResetGameParameter = 20,
+	SetSwitch = 21,
+	ToggleBypass = 22,
+	ResetBypassEffect = 23,
+	Break = 24,
+	Seek = 25
+};
+
+enum class EventActionParameterType : uint8_t
+{
+	Delay = 0x0E,
+	Play = 0x0F,
+	Probability = 0x10
+};
+
+#pragma pack (push, 0x1)
 class Section
 {
 public:
 	char Id[4]; // Name of the section (four characters long).
-	size_t Length; // Length of the section.
+	uint32_t Length; // Length of the section.
 
 public:
 	Section();
+	Section(const Section& section);
 	~Section();
-};
-
-class ObjectSection : public Section
-{
-public:
-	uint32_t Count; // Number of objects.
 
 public:
-	ObjectSection();
-	~ObjectSection();
-};
-
-class SoundSection : public Section
-{
-public:
-	uint8_t UnknownData[0x4];
-	uint32_t Count; // Number of sound banks.
-};
-
-class SoundTypeSection : public Section
-{
-public:
-	uint8_t UnknownData[0x4];
-	uint32_t Count; // Number of sound banks.
+	Section& operator=(const Section& section);
 };
 
 class BKHD : public Section
@@ -89,85 +119,130 @@ class BKHD : public Section
 public:
 	uint32_t Version; // Soundbank version.
 	uint32_t Id; // Soundbank id.
-	uint8_t UnknownData[0x8];
 
 public:
 	BKHD();
+	BKHD(const BKHD& bkhd);
 	~BKHD();
+
+public:
+	BKHD& operator=(const BKHD& bkhd);
 };
 
 class DIDX
 {
 public:
 	uint32_t Id; // Id of the ".wem" file.
-	size_t Offset; // DATA section offset.
-	size_t Length; // Length of the ".wem" file.
+	uint32_t Offset; // DATA section offset.
+	uint32_t Length; // Length of the ".wem" file.
 
 public:
 	DIDX();
+	DIDX(const DIDX& didx);
 	~DIDX();
+
+public:
+	DIDX& operator=(const DIDX& didx);
 };
+
+// Implementation of this class is unfinished, I can't find any files that use it so I can't verify if it works or not.
 
 class HIRC
 {
 public:
 	WwiseObjects Type; // Object type identifier.
-	size_t Length; // Length of the object.
+	uint32_t Length; // Length of the object.
 	uint32_t Id; // Internal id for the object.
 
 public:
 	HIRC();
+	HIRC(const HIRC& hirc);
 	~HIRC();
 
 public:
-	std::string GetObjectName() const;
+	std::string GetTypeStr() const;
+
+public:
+	HIRC& operator=(const HIRC& hirc);
 };
+
+// Implementation of this class is unfinished, I can't find any files that use it so I can't verify if it works or not.
 
 class STID
 {
 public:
-	uint32_t SoundId; // Sound id to match the object listed in the HIRC section.
-	uint8_t NameLength; // Length of characters the sounds name is.
+	uint8_t SoundId; // Sound id to match the object listed in the HIRC section.
+	uint32_t NameLength; // Length of characters of the sounds name.
 
 public:
 	STID();
+	STID(const STID& stid);
 	~STID();
+
+public:
+	STID& operator=(const STID& stid);
 };
 
-class STID_2 : public STID
+// Implementation of this class is unfinished, related to the "HIRC" section.
+
+class ObjSection : public Section
 {
 public:
-	char Name[256]; // Name of the sound bank, 256 buffer.
+	uint32_t Count; // Number of objects.
 
 public:
-	STID_2();
-	~STID_2();
+	ObjSection();
+	ObjSection(const ObjSection& objSection);
+	~ObjSection();
+
+public:
+	ObjSection& operator=(const ObjSection& objSection);
 };
+
+// Implementation of this class is unfinished, related to the "STID" section.
+
+class SfxSection : public Section
+{
+public:
+	uint8_t UnknownData[0x4];
+	uint32_t Count; // Number of sound banks.
+
+public:
+	SfxSection();
+	SfxSection(const SfxSection& sfxSection);
+	~SfxSection();
+
+public:
+	SfxSection& operator=(const SfxSection& sfxSection);
+};
+#pragma pack (pop)
 
 class SoundBank
 {
-private:
-	std::string FileName;
-	std::filesystem::path FilePath;
-	std::fstream BankFile;
+private: // Custom fields.
+	std::filesystem::path _filePath;
+	std::ifstream _bankFile;
 
-private:
-	BKHD BankHeader;
-	size_t DataOffset;
-	std::vector<DIDX> WemData;
-	std::vector<HIRC> WwiseObjects;
-
-private:
+private: // File fields.
+	BKHD _bankHeader;
+	size_t _dataOffset;
+	std::vector<DIDX> _wemData;
+	std::vector<HIRC> _wemObjects;
 
 public:
 	SoundBank(const std::filesystem::path& filePath);
+	SoundBank(const SoundBank& soundBank);
 	~SoundBank();
 
+private:
+	size_t Swap(size_t value);
+
 public:
-	size_t FileCount() const;
-	size_t ObjectCount() const;
-	void PhraseSections();
+	bool ParseSections();
 	void ExtractFiles();
 	void PrintHeader();
 	void PrintObjects();
+
+public:
+	SoundBank& operator=(const SoundBank& soundBank);
 };
